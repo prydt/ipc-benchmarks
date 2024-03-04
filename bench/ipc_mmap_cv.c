@@ -80,8 +80,6 @@ int main() {
     shmp->ack   = false;
     shmp->done  = false;
 
-    pid_t child = fork();
-
     switch(fork()) {
     case -1: // fail
         fprintf(stderr, "failed to fork()\n");

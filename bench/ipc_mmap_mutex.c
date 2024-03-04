@@ -61,18 +61,17 @@ int main() {
 
     pthread_mutexattr_t mutex_attr;
     check(pthread_mutexattr_init(&mutex_attr), "failed to init mutex attr struct");
-    check(pthread_mutexattr_settype(&mutex_attr, PTHREAD_MUTEX_ERRORCHECK), "failed to set mutex attr type");
     check(pthread_mutexattr_setpshared(&mutex_attr, PTHREAD_PROCESS_SHARED), "failed to set mutex shared attr");
     check(pthread_mutex_init(&shmp->mutex, &mutex_attr), "failed to init mutex");
 
     shmp->sent  = false;
     shmp->ack   = false;
 
-    pid_t child = fork();
     switch(fork()) {
     case -1: // fail
         fprintf(stderr, "failed to fork()\n");
         exit(-1);
+
     case 0: // child
         for (int i = 0; i < NUM_WARMUP; i++)
             recv(shmp, false);
