@@ -1,7 +1,7 @@
 /*
  * IPC condition variable overhead
  *
- * output format: list of time in seconds, seperated by newline
+ * output format: list of time in nanoseconds, seperated by newline
  *
  */
 
