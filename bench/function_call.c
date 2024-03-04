@@ -5,30 +5,25 @@
  *
  */
 
-#include <time.h>
-#include <stdio.h>
-#include <stdbool.h>
+#include "ipc_bench.h"
 
-#define NUM_ITER (1000 * 10)
-#define NUM_WARMUP 1000
+struct timespec start, end;
 
-clock_t start, end;
+void funct(bool record) {
+    // end = clock();
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    if (record)
+        printf("%ld\n", (end.tv_nsec - start.tv_nsec)
+                        + (end.tv_sec - start.tv_sec) * 1000000000);
 
-void funct(char *payload) {
-    end = clock();
 }
 
 void bench(bool record) {
-    start = clock();
-    funct(NULL);
-    if (record) {
-        printf("%Lf\n", (long double) (end - start) / CLOCKS_PER_SEC);
-        //printf("%Ld\n", (end - start) );
-    }
+    clock_gettime(CLOCK_MONOTONIC, &start);
+    funct(record);
 }
 
 int main() {
-
     for (int i = 0; i < NUM_WARMUP; i++) {
         bench(false);
     }

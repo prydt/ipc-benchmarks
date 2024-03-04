@@ -5,34 +5,14 @@
  *
  */
 
-#include <time.h>
-#include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-
-#include <sys/mman.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <unistd.h>
-#include <pthread.h>
-#include <semaphore.h>
-
-#define NUM_ITER (1000 * 10)
-#define NUM_WARMUP 1000
-
-void check(int ret, const char* errormsg) {
-    if (ret != 0) {
-        printf("error %s\n", errormsg);
-        exit(-1);
-    }
-}
+#include "ipc_bench.h"
 
 struct shared_mem {
     pthread_cond_t cv_sent, cv_ack;
     pthread_mutex_t mutex;
     sem_t init_sem; // used for initialization
 
-    clock_t start;
+    struct timespec start;
     bool sent, ack, done;
 };
 
@@ -41,7 +21,7 @@ void send(struct shared_mem *shmp) {
 
     shmp->ack = false;
     shmp->sent = true;
-    shmp->start = clock();
+    clock_gettime(CLOCK_MONOTONIC, &shmp->start);
     pthread_cond_signal(&shmp->cv_sent);
 
     while (!shmp->ack && !shmp->done)
@@ -58,14 +38,17 @@ void recv(struct shared_mem *shmp, bool record) {
     while(!shmp->sent && !shmp->done)
         pthread_cond_wait(&shmp->cv_sent, &shmp->mutex);
     
-    clock_t end = clock();
+    struct timespec end, diff;
+    clock_gettime(CLOCK_MONOTONIC, &end);
     if (record){
-        printf("%Lf\n", (long double) (end - shmp->start) / CLOCKS_PER_SEC);
+        diff.tv_sec = end.tv_sec - shmp->start.tv_sec;
+        diff.tv_nsec = end.tv_nsec - shmp->start.tv_nsec;
+        assert(diff.tv_nsec >= 0);
+        printf("%ld\n", diff.tv_nsec + (diff.tv_sec * 1000000000));
     }
  
     shmp->ack = true;
     pthread_cond_signal(&shmp->cv_ack);
-
     pthread_mutex_unlock(&shmp->mutex);
 }
 
@@ -78,7 +61,7 @@ int main() {
                                     0);
 
     if (shmp == MAP_FAILED)
-        return -1;
+        exit(-1);
 
     pthread_mutexattr_t mutex_attr;
     check(pthread_mutexattr_init(&mutex_attr), "failed to init mutex attr struct");
@@ -98,9 +81,13 @@ int main() {
     shmp->done  = false;
 
     pid_t child = fork();
-    if (child == 0) {
-        // in child process (Receiver)
 
+    switch(fork()) {
+    case -1: // fail
+        fprintf(stderr, "failed to fork()\n");
+        exit(-1);
+
+    case 0: // child
         sem_post(&shmp->init_sem);
 
         for (int i = 0; i < NUM_WARMUP; i++)
@@ -114,9 +101,9 @@ int main() {
         shmp->done = true;
         pthread_cond_signal(&shmp->cv_ack);
         pthread_mutex_unlock(&shmp->mutex);
-    } else {
-        // parent process (Sender)
-
+        break;
+ 
+    default: // parent
         sem_wait(&shmp->init_sem); // always start sender after receiver
 
         for (int i = 0; i < NUM_WARMUP; i++)
