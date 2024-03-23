@@ -1,9 +1,11 @@
+#include "ipc_atomic.h"
 #include "ipc_condvar.h"
 #include "ipc_futex.h"
 #include "ipc_runner.h"
 
 // #define IPC_CONDVAR_BENCH
-#define IPC_FUTEX_BENCH
+// #define IPC_FUTEX_BENCH
+#define IPC_ATOMIC_BENCH
 
 void check(int ret, const char *errormsg) {
     if (ret != 0) {
@@ -13,47 +15,45 @@ void check(int ret, const char *errormsg) {
 }
 
 void ipc_init() {
-    // if (config->data == MMAP && config->sync == CONDITION_VARIABLES) {
-    //     channel_cv_init();
-    // }
-    // switch (config->sync) {
-    //     case CONDITION_VARIABLES:
-    //         channel_cv_init();
-    //         break;
-    //     case FUTEX:
-    //         channel_futex_init();
-    //         break;
-    //     default:
-    // }
+#ifdef IPC_CONDVAR_BENCH
+    channel_cv_init();
+#endif
 
-    #ifdef IPC_CONDVAR_BENCH
-        channel_cv_init();
-    #endif
+#ifdef IPC_FUTEX_BENCH
+    channel_futex_init();
+#endif
 
-    #ifdef IPC_FUTEX_BENCH
-        channel_futex_init();
-    #endif
+#ifdef IPC_ATOMIC_BENCH
+    channel_atomic_init();
+#endif
 }
 
 void ipc_send(int round) {
-    #ifdef IPC_CONDVAR_BENCH
-        channel_cv_send(round);
-    #endif
+#ifdef IPC_CONDVAR_BENCH
+    channel_cv_send(round);
+#endif
 
-    #ifdef IPC_FUTEX_BENCH
-        channel_futex_send(round);
-    #endif
+#ifdef IPC_FUTEX_BENCH
+    channel_futex_send(round);
+#endif
 
+#ifdef IPC_ATOMIC_BENCH
+    channel_atomic_send(round);
+#endif
 }
 
 void ipc_recv(int expected_round) {
-    #ifdef IPC_CONDVAR_BENCH
-        channel_cv_recv(expected_round);
-    #endif
+#ifdef IPC_CONDVAR_BENCH
+    channel_cv_recv(expected_round);
+#endif
 
-    #ifdef IPC_FUTEX_BENCH
-        channel_futex_recv(expected_round);
-    #endif
+#ifdef IPC_FUTEX_BENCH
+    channel_futex_recv(expected_round);
+#endif
+
+#ifdef IPC_ATOMIC_BENCH
+    channel_atomic_recv(expected_round);
+#endif
 }
 
 void child_warmup() {
