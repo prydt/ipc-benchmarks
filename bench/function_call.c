@@ -23,6 +23,7 @@ void bench(bool record) {
     funct(record);
 }
 
+// TODO Change to timing whole batch.
 int main() {
     for (int i = 0; i < NUM_WARMUP; i++) {
         bench(false);

@@ -39,7 +39,7 @@ void recv(struct shared_mem *shmp, bool record) {
         pthread_cond_wait(&shmp->cv_sent, &shmp->mutex);
     
     struct timespec end, diff;
-    clock_gettime(CLOCK_MONOTONIC, &end);
+    clock_gettime(CLOCK_MONOTONIC, &end); // TODO check high res clock. check across processes.
     if (record){
         diff.tv_sec = end.tv_sec - shmp->start.tv_sec;
         diff.tv_nsec = end.tv_nsec - shmp->start.tv_nsec;
@@ -54,7 +54,9 @@ void recv(struct shared_mem *shmp, bool record) {
 
 int main() {
 
-    struct shared_mem *shmp = mmap( NULL, sizeof(struct shared_mem),
+    // TODO check objdump for pthread calls.
+
+    struct shared_mem *shmp = mmap( NULL, sizeof(struct shared_mem), // TODO Change size to page multiple.
                                     PROT_READ | PROT_WRITE,
                                     MAP_SHARED | MAP_ANONYMOUS,
                                     -1,

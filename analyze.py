@@ -23,5 +23,3 @@ if __name__ == "__main__":
         print(f"mean = {mean(times)}")
         print(f"stddev = {stdev(times)}")
         print(f"variance = {variance(times)}")
-        print(f"pstddev = {pstdev(times)}")
-        print(f"pvariance = {pvariance(times)}")

@@ -19,8 +19,8 @@ void send(struct shared_mem *shmp) {
     clock_gettime(CLOCK_MONOTONIC, &shmp->start);
     shmp->ack = false;
     shmp->sent = true;
-    msync(shmp, sizeof(struct shared_mem), MS_ASYNC | MS_INVALIDATE);
     pthread_mutex_unlock(&shmp->mutex);
+    msync(shmp, sizeof(struct shared_mem), MS_SYNC | MS_INVALIDATE);
 
     while (!shmp->ack)
         sched_yield();
@@ -44,7 +44,7 @@ void recv(struct shared_mem *shmp, bool record) {
 
     shmp->sent = false;
     shmp->ack = true;
-    msync(shmp, sizeof(struct shared_mem), MS_ASYNC | MS_INVALIDATE);
+    msync(shmp, sizeof(struct shared_mem), MS_SYNC | MS_INVALIDATE);
     pthread_mutex_unlock(&shmp->mutex);
 }
 
