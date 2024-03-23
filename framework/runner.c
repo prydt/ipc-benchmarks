@@ -3,10 +3,12 @@
 #include "ipc_atomic.h"
 #include "ipc_condvar.h"
 #include "ipc_futex.h"
+#include "ipc_pipe.h"
 
-// #define IPC_CONDVAR_BENCH
-#define IPC_FUTEX_BENCH
-// #define IPC_ATOMIC_BENCH
+//#define IPC_CONDVAR_BENCH
+// #define IPC_FUTEX_BENCH
+//#define IPC_ATOMIC_BENCH
+#define IPC_PIPE_BENCH
 
 void check(int ret, const char *errormsg) {
     if (ret != 0) {
@@ -27,6 +29,10 @@ void ipc_init() {
 #ifdef IPC_ATOMIC_BENCH
     channel_atomic_init();
 #endif
+
+#ifdef IPC_PIPE_BENCH
+    channel_pipe_init();
+#endif
 }
 
 void ipc_send(int round) {
@@ -41,6 +47,11 @@ void ipc_send(int round) {
 #ifdef IPC_ATOMIC_BENCH
     channel_atomic_send(round);
 #endif
+
+#ifdef IPC_PIPE_BENCH
+    channel_pipe_send(round);
+#endif
+
 }
 
 void ipc_recv(int expected_round) {
@@ -54,6 +65,10 @@ void ipc_recv(int expected_round) {
 
 #ifdef IPC_ATOMIC_BENCH
     channel_atomic_recv(expected_round);
+#endif
+
+#ifdef IPC_PIPE_BENCH
+    channel_pipe_recv(expected_round);
 #endif
 }
 
@@ -100,6 +115,10 @@ int main(int argc, char **argv) {
             ERROR("failed to fork()");
 
         case 0:  // child
+            #ifdef IPC_PIPE_BENCH
+            // need to close one end of pipe
+            channel_pipe_child_init();
+            #endif
 
             child_warmup();
             child_benchmark();
