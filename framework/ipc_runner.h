@@ -8,6 +8,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -26,35 +27,36 @@
 
 void check(int ret, const char* errormsg);
 
-enum data_mechanism {
-    MMAP,
+// enum data_mechanism {
+//     MMAP, // implemented
 
-    DATA_NONE
-};
+//     DATA_NONE
+// };
 
-enum sync_mechanism {
-    CONDITION_VARIABLES,
-    MUTEX,
-    SEMAPHORE,
-    ATOMICS,
-    SPINLOCKS,
-    SIGNALS,
+// enum sync_mechanism {
+//     CONDITION_VARIABLES,    // implemented
+//     MUTEX,
+//     SEMAPHORE,
+//     ATOMICS,
+//     FUTEX,                  // implemented
+//     SPINLOCKS,
+//     SIGNALS,
 
-    SYNC_NONE
-};
+//     SYNC_NONE
+// };
 
-enum combined_mechanism {
-    PIPES,
-    SOCKETS,
-    MESSAGE_QUEUES,
+// enum combined_mechanism {
+//     PIPES,
+//     SOCKETS,
+//     MESSAGE_QUEUES,
 
-    COMBINED_NONE
-};
+//     COMBINED_NONE
+// };
 
-struct benchmark_config {
-    enum data_mechanism data;
-    enum sync_mechanism sync;
-    enum combined_mechanism combined;
-};
+// struct benchmark_config {
+//     enum data_mechanism data;
+//     enum sync_mechanism sync;
+//     enum combined_mechanism combined;
+// };
 
 #endif

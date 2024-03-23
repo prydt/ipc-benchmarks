@@ -1,56 +1,89 @@
-#include "ipc_runner.h"
 #include "ipc_condvar.h"
+#include "ipc_futex.h"
+#include "ipc_runner.h"
 
-void check(int ret, const char* errormsg) {
+// #define IPC_CONDVAR_BENCH
+#define IPC_FUTEX_BENCH
+
+void check(int ret, const char *errormsg) {
     if (ret != 0) {
         fprintf(stderr, "ERROR %s, ERR: %s\n", errormsg, strerror(errno));
         exit(-1);
     }
 }
 
-void ipc_init(struct benchmark_config *config) {
-    if (config->data == MMAP && config->sync == CONDITION_VARIABLES) {
+void ipc_init() {
+    // if (config->data == MMAP && config->sync == CONDITION_VARIABLES) {
+    //     channel_cv_init();
+    // }
+    // switch (config->sync) {
+    //     case CONDITION_VARIABLES:
+    //         channel_cv_init();
+    //         break;
+    //     case FUTEX:
+    //         channel_futex_init();
+    //         break;
+    //     default:
+    // }
+
+    #ifdef IPC_CONDVAR_BENCH
         channel_cv_init();
-    }
+    #endif
+
+    #ifdef IPC_FUTEX_BENCH
+        channel_futex_init();
+    #endif
 }
 
-void ipc_send(struct benchmark_config *config, int round) {
-    if (config->data == MMAP && config->sync == CONDITION_VARIABLES)
+void ipc_send(int round) {
+    #ifdef IPC_CONDVAR_BENCH
         channel_cv_send(round);
+    #endif
+
+    #ifdef IPC_FUTEX_BENCH
+        channel_futex_send(round);
+    #endif
+
 }
 
-void ipc_recv(struct benchmark_config *config, int expected_round) {
-    if (config->data == MMAP && config->sync == CONDITION_VARIABLES)
+void ipc_recv(int expected_round) {
+    #ifdef IPC_CONDVAR_BENCH
         channel_cv_recv(expected_round);
+    #endif
+
+    #ifdef IPC_FUTEX_BENCH
+        channel_futex_recv(expected_round);
+    #endif
 }
 
-void child_warmup(struct benchmark_config *config) {
+void child_warmup() {
     for (int i = 0; i < NUM_WARMUP; i++) {
-        ipc_recv(config, i);
+        ipc_recv(i);
     }
 }
-void parent_warmup(struct benchmark_config *config) {
+void parent_warmup() {
     for (int i = 0; i < NUM_WARMUP; i++) {
-        ipc_send(config, i);
+        ipc_send(i);
     }
 }
 
-void child_benchmark(struct benchmark_config *config) {
+void child_benchmark() {
     for (int i = 0; i < NUM_ITER; i++) {
-        ipc_recv(config, i);
+        ipc_recv(i);
     }
 }
-void parent_benchmark(struct benchmark_config *config) {
+void parent_benchmark() {
     for (int i = 0; i < NUM_ITER; i++) {
-        ipc_send(config, i);
+        ipc_send(i);
     }
 }
 
 int main(int argc, char **argv) {
     // TODO read arguments
-    struct benchmark_config cfg = {MMAP, CONDITION_VARIABLES, COMBINED_NONE};
+    // struct benchmark_config cfg = {MMAP, CONDITION_VARIABLES, COMBINED_NONE};
 
-    // TODO argument to set CPU affinity: same core, same hyperthreaded core, different cores
+    // TODO argument to set CPU affinity: same core, same hyperthreaded core,
+    // different cores
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     CPU_SET(0, &cpuset);
@@ -59,7 +92,7 @@ int main(int argc, char **argv) {
 
     const long PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
 
-    ipc_init(&cfg);
+    ipc_init();
 
     switch (fork()) {
         case -1:  // FAIL
@@ -67,18 +100,18 @@ int main(int argc, char **argv) {
 
         case 0:  // child
 
-            child_warmup(&cfg);
-            child_benchmark(&cfg);
+            child_warmup();
+            child_benchmark();
 
             break;
         default:  // parent
 
-            parent_warmup(&cfg);
+            parent_warmup();
 
             struct timespec start, end, diff;
             clock_gettime(CLOCK_MONOTONIC, &start);
 
-            parent_benchmark(&cfg);
+            parent_benchmark();
 
             clock_gettime(CLOCK_MONOTONIC, &end);
             diff.tv_sec = end.tv_sec - start.tv_sec;
