@@ -24,6 +24,8 @@
         exit(-1);                                                           \
     } while (0)
 
+void check(int ret, const char* errormsg);
+
 enum data_mechanism {
     MMAP,
 

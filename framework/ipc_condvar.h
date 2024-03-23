@@ -18,7 +18,8 @@ struct channel_cv {
 
 extern struct channel_cv *condvar_buf;
 
-void condvar_send(int round);
-void condvar_recv(int expected_round);
+void channel_cv_init(void);
+void channel_cv_send(int round);
+void channel_cv_recv(int expected_round);
 
 #endif

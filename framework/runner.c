@@ -10,44 +10,18 @@ void check(int ret, const char* errormsg) {
 
 void ipc_init(struct benchmark_config *config) {
     if (config->data == MMAP && config->sync == CONDITION_VARIABLES) {
-        condvar_buf = (struct channel_cv*)
-            mmap(NULL, sizeof(struct channel_cv), PROT_READ | PROT_WRITE,
-                 MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-
-        if (condvar_buf == MAP_FAILED) ERROR("mmap failed");
-
-        pthread_mutexattr_t mutex_attr;
-        check(pthread_mutexattr_init(&mutex_attr),
-              "failed to init mutex attr struct");
-        check(pthread_mutexattr_setpshared(&mutex_attr, PTHREAD_PROCESS_SHARED),
-              "failed to set mutex shared attr");
-        check(pthread_mutex_init(&condvar_buf->mutex, &mutex_attr),
-              "failed to init mutex");
-
-        pthread_condattr_t cond_attr;
-        check(pthread_condattr_init(&cond_attr),
-              "failed to init condvar attr struct");
-        check(pthread_condattr_setpshared(&cond_attr, PTHREAD_PROCESS_SHARED),
-              "failed to set condvar shared attr");
-
-        check(pthread_cond_init(&condvar_buf->cv_empty, &cond_attr),
-              "failed to init cv_sent");
-        check(pthread_cond_init(&condvar_buf->cv_full, &cond_attr),
-              "failed to init cv_ack");
-
-        condvar_buf->closed = false;
-        condvar_buf->empty = true;
+        channel_cv_init();
     }
 }
 
 void ipc_send(struct benchmark_config *config, int round) {
     if (config->data == MMAP && config->sync == CONDITION_VARIABLES)
-        condvar_send(round);
+        channel_cv_send(round);
 }
 
 void ipc_recv(struct benchmark_config *config, int expected_round) {
     if (config->data == MMAP && config->sync == CONDITION_VARIABLES)
-        condvar_recv(expected_round);
+        channel_cv_recv(expected_round);
 }
 
 void child_warmup(struct benchmark_config *config) {
