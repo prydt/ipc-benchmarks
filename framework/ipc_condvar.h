@@ -1,5 +1,6 @@
 /*
- * channel (bounded buffer, size=1) for IPC using mmap and pthread condition variables
+ * channel (bounded buffer, size=1) for IPC using mmap and pthread condition
+ * variables
  */
 
 #ifndef IPC_CONDVAR_H

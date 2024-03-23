@@ -5,6 +5,9 @@
 #ifndef IPC_FUTEX_H
 #define IPC_FUTEX_H
 
+#include <linux/futex.h>
+#include <sys/syscall.h>
+
 #include "ipc_runner.h"
 
 struct channel_futex {

@@ -1,6 +1,4 @@
 #include "ipc_futex.h"
-#include <linux/futex.h>
-#include <sys/syscall.h>
 
 struct channel_futex *futex_buf;
 
@@ -16,18 +14,19 @@ inline long atomic_notify(uint32_t *futex, uint32_t amt_to_wake) {
 }
 
 void channel_futex_init(void) {
-    futex_buf = (struct channel_futex*)mmap(NULL, sizeof(struct channel_futex),
-                                            PROT_READ | PROT_WRITE,
-                                            MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+    futex_buf = (struct channel_futex *)mmap(NULL, sizeof(struct channel_futex),
+                                             PROT_READ | PROT_WRITE,
+                                             MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
-    if (futex_buf == MAP_FAILED) ERROR("mmap failed"); 
+    if (futex_buf == MAP_FAILED) ERROR("mmap failed");
 
     futex_buf->empty = 1;
 }
 
 void channel_futex_send(int round) {
     while (!futex_buf->empty)
-        atomic_wait(&futex_buf->empty, 0); // wait while empty == 0 (still full)
+        atomic_wait(&futex_buf->empty,
+                    0);  // wait while empty == 0 (still full)
 
     futex_buf->payload = round;
     futex_buf->empty = 0; /*not empty*/
@@ -36,7 +35,8 @@ void channel_futex_send(int round) {
 
 void channel_futex_recv(int expected_round) {
     while (futex_buf->empty)
-        atomic_wait(&futex_buf->empty, 1); // wait while empty == 1 (still empty)
+        atomic_wait(&futex_buf->empty,
+                    1);  // wait while empty == 1 (still empty)
 
     assert(futex_buf->payload == expected_round);
     futex_buf->empty = 1; /*set to empty*/
