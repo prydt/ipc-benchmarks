@@ -1,11 +1,12 @@
+#include "ipc_runner.h"
+
 #include "ipc_atomic.h"
 #include "ipc_condvar.h"
 #include "ipc_futex.h"
-#include "ipc_runner.h"
 
 // #define IPC_CONDVAR_BENCH
-// #define IPC_FUTEX_BENCH
-#define IPC_ATOMIC_BENCH
+#define IPC_FUTEX_BENCH
+// #define IPC_ATOMIC_BENCH
 
 void check(int ret, const char *errormsg) {
     if (ret != 0) {
