@@ -16,6 +16,7 @@ struct channel_cv {
     bool closed, empty;
 };
 
+extern struct channel_cv *condvar_buf;
 
 void condvar_send(int round);
 void condvar_recv(int expected_round);

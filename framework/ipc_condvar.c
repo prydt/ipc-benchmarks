@@ -1,39 +1,37 @@
 #include "ipc_condvar.h"
 
-extern void *shared_memory;
+struct channel_cv *condvar_buf;
 
 void condvar_send(int round) {
-    struct channel_cv *shmp = shared_memory;
-    pthread_mutex_lock(&shmp->mutex);
+    pthread_mutex_lock(&condvar_buf->mutex);
 
-    if (shmp->closed) {
+    if (condvar_buf->closed) {
         ERROR("tried to send in closed buffer");
     }
 
-    while (!shmp->empty) pthread_cond_wait(&shmp->cv_full, &shmp->mutex);
+    while (!condvar_buf->empty) pthread_cond_wait(&condvar_buf->cv_full, &condvar_buf->mutex);
 
     // there is now an empty slot
-    shmp->payload = round;
-    shmp->empty = false;
-    pthread_cond_signal(&shmp->cv_empty);
+    condvar_buf->payload = round;
+    condvar_buf->empty = false;
+    pthread_cond_signal(&condvar_buf->cv_empty);
 
-    pthread_mutex_unlock(&shmp->mutex);
+    pthread_mutex_unlock(&condvar_buf->mutex);
 }
 
 void condvar_recv(int expected_round) {
-    struct channel_cv *shmp = shared_memory;
-    pthread_mutex_lock(&shmp->mutex);
+    pthread_mutex_lock(&condvar_buf->mutex);
 
-    while (shmp->empty) {
-        if (shmp->closed) ERROR("tried to get in closed buffer");
+    while (condvar_buf->empty) {
+        if (condvar_buf->closed) ERROR("tried to get in closed buffer");
 
-        pthread_cond_wait(&shmp->cv_empty, &shmp->mutex);
+        pthread_cond_wait(&condvar_buf->cv_empty, &condvar_buf->mutex);
     }
 
-    assert(shmp->payload == expected_round);  // sanity check
-    shmp->empty = true;
+    assert(condvar_buf->payload == expected_round);  // sanity check
+    condvar_buf->empty = true;
 
-    pthread_cond_signal(&shmp->cv_full);
+    pthread_cond_signal(&condvar_buf->cv_full);
 
-    pthread_mutex_unlock(&shmp->mutex);
+    pthread_mutex_unlock(&condvar_buf->mutex);
 }
