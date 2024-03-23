@@ -7,7 +7,6 @@
 #define IPC_ATOMIC_H
 
 #include <stdatomic.h>
-#include <threads.h>
 
 #include "ipc_runner.h"
 

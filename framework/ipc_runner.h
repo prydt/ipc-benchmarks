@@ -2,6 +2,7 @@
 #define IPC_RUNNER_H
 
 #define _GNU_SOURCE /* for cpuset functions */
+#include <sched.h>
 
 #include <assert.h>
 #include <errno.h>
