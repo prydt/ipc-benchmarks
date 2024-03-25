@@ -1,10 +1,7 @@
 # ipc-benchmarks
 
-Current benchmarks implemented:
- - [x] function call overhead
- - [x] IPC over mmap, condvars
- - [x] IPC over mmap, mutexes
- - [x] IPC over mmap, semaphores
- - [ ] IPC over mmap, atomic signaling
- - [x] IPC over pipe
- - [ ] IPC over socket
+Benchmarks implemented
+ - [x] shared memory + pthread condvars
+ - [x] shared memory + futexes
+ - [x] shared memory + C11 atomics
+ - [ ] socketpair()
