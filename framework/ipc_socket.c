@@ -26,14 +26,39 @@ void channel_socket_child_init(void) {
 }
 
 void channel_socket_send(int round) {
-    fprintf(socket_sender, "%d\n", round);
+    //fprintf(socket_sender, "%d\n", round);
+    union {
+        int number;
+        char bytes[sizeof(int) / sizeof(char)];
+    } conversion;
+
+    conversion.number = round;
+
+    for (int i = 0; i < sizeof(conversion.bytes) / sizeof(conversion.bytes[0]); i++) {
+        putc(conversion.bytes[i], socket_sender);
+    }
+
     fflush(socket_sender);
 }
 
 void channel_socket_recv(int expected_round) {
-    int round;
-    fscanf(socket_recver, "%d", &round);
+    /* int round; */
+    //fscanf(socket_recver, "%d", &round);
+    //
+
+    union {
+        int number;
+        char bytes[sizeof(int) / sizeof(char)];
+    } conversion;
+
+    /* conversion.number = round; */
+
+    for (int i = 0; i < sizeof(conversion.bytes) / sizeof(conversion.bytes[0]); i++) {
+        /* putc(conversion.bytes[i], socket_sender); */
+        conversion.bytes[i] = (char)fgetc(socket_recver);
+    }
+
 
     // printf("%d = %d\n", round, expected_round);
-    assert(round == expected_round);
+    assert(conversion.number == expected_round);
 }
