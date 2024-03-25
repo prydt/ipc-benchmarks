@@ -9,8 +9,8 @@
 //#define IPC_CONDVAR_BENCH
 //#define IPC_FUTEX_BENCH
 //#define IPC_ATOMIC_BENCH
-//#define IPC_PIPE_BENCH
-#define IPC_SOCKET_BENCH
+#define IPC_PIPE_BENCH
+// #define IPC_SOCKET_BENCH
 
 void check(int ret, const char *errormsg) {
     if (ret != 0) {
