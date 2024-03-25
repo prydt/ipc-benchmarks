@@ -3,8 +3,8 @@
  * 
  */
 
-#ifndef IPC_PIPE_H
-#define IPC_PIPE_H
+#ifndef IPC_PIPE_H_
+#define IPC_PIPE_H_
 
 #include "ipc_runner.h"
 

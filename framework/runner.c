@@ -4,11 +4,13 @@
 #include "ipc_condvar.h"
 #include "ipc_futex.h"
 #include "ipc_pipe.h"
+#include "ipc_socket.h"
 
 //#define IPC_CONDVAR_BENCH
-// #define IPC_FUTEX_BENCH
+//#define IPC_FUTEX_BENCH
 //#define IPC_ATOMIC_BENCH
-#define IPC_PIPE_BENCH
+//#define IPC_PIPE_BENCH
+#define IPC_SOCKET_BENCH
 
 void check(int ret, const char *errormsg) {
     if (ret != 0) {
@@ -33,6 +35,10 @@ void ipc_init() {
 #ifdef IPC_PIPE_BENCH
     channel_pipe_init();
 #endif
+
+#ifdef IPC_SOCKET_BENCH
+    channel_socket_init();
+#endif
 }
 
 void ipc_send(int round) {
@@ -52,6 +58,9 @@ void ipc_send(int round) {
     channel_pipe_send(round);
 #endif
 
+#ifdef IPC_SOCKET_BENCH
+    channel_socket_send(round);
+#endif
 }
 
 void ipc_recv(int expected_round) {
@@ -69,6 +78,10 @@ void ipc_recv(int expected_round) {
 
 #ifdef IPC_PIPE_BENCH
     channel_pipe_recv(expected_round);
+#endif
+
+#ifdef IPC_SOCKET_BENCH
+    channel_socket_recv(expected_round);
 #endif
 }
 
@@ -116,8 +129,12 @@ int main(int argc, char **argv) {
 
         case 0:  // child
             #ifdef IPC_PIPE_BENCH
-            // need to close one end of pipe
-            channel_pipe_child_init();
+                // need to close one end of pipe
+                channel_pipe_child_init();
+            #endif
+
+            #ifdef IPC_SOCKET_BENCH
+                channel_socket_child_init();
             #endif
 
             child_warmup();

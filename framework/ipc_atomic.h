@@ -3,8 +3,8 @@
  * atomics
  */
 
-#ifndef IPC_ATOMIC_H
-#define IPC_ATOMIC_H
+#ifndef IPC_ATOMIC_H_
+#define IPC_ATOMIC_H_
 
 #include <stdatomic.h>
 

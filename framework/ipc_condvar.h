@@ -3,8 +3,8 @@
  * variables
  */
 
-#ifndef IPC_CONDVAR_H
-#define IPC_CONDVAR_H
+#ifndef IPC_CONDVAR_H_
+#define IPC_CONDVAR_H_
 
 #include "ipc_runner.h"
 

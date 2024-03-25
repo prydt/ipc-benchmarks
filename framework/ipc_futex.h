@@ -2,8 +2,8 @@
  * single producer, single consumer channel implemented with mmap and futexes
  */
 
-#ifndef IPC_FUTEX_H
-#define IPC_FUTEX_H
+#ifndef IPC_FUTEX_H_
+#define IPC_FUTEX_H_
 
 #include <linux/futex.h>
 #include <sys/syscall.h>
