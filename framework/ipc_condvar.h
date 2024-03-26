@@ -9,12 +9,12 @@
 #include "ipc_runner.h"
 
 struct channel_cv {
-    pthread_cond_t cv_empty, cv_full;
+    pthread_cond_t cv_empty, cv_acked;
     pthread_mutex_t mutex;
 
-    int payload;
+    int payload, ack_payload;
 
-    bool closed, empty;
+    bool empty, acked;
 };
 
 extern struct channel_cv *condvar_buf;

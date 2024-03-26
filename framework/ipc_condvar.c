@@ -24,29 +24,33 @@ void channel_cv_init() {
           "failed to set condvar shared attr");
 
     check(pthread_cond_init(&condvar_buf->cv_empty, &cond_attr),
-          "failed to init cv_sent");
-    check(pthread_cond_init(&condvar_buf->cv_full, &cond_attr),
-          "failed to init cv_ack");
+          "failed to init cv_empty");
+    check(pthread_cond_init(&condvar_buf->cv_acked, &cond_attr),
+          "failed to init cv_acked");
 
-    condvar_buf->closed = false;
     condvar_buf->empty = true;
+    condvar_buf->acked = false;
 }
+
 
 void channel_cv_send(int round) {
     pthread_mutex_lock(&condvar_buf->mutex);
 
-    if (condvar_buf->closed) {
-        ERROR("tried to send in closed buffer");
-    }
-
     while (!condvar_buf->empty)
-        pthread_cond_wait(&condvar_buf->cv_full, &condvar_buf->mutex);
+        pthread_cond_wait(&condvar_buf->cv_acked, &condvar_buf->mutex);
 
     // there is now an empty slot
     condvar_buf->payload = round;
     condvar_buf->empty = false;
     pthread_cond_signal(&condvar_buf->cv_empty);
 
+    while(!condvar_buf->acked) {
+        pthread_cond_wait(&condvar_buf->cv_acked, &condvar_buf->mutex);
+    }
+
+    // recieved ack
+    assert(condvar_buf->ack_payload == round);
+    condvar_buf->acked = false;
     pthread_mutex_unlock(&condvar_buf->mutex);
 }
 
@@ -54,15 +58,14 @@ void channel_cv_recv(int expected_round) {
     pthread_mutex_lock(&condvar_buf->mutex);
 
     while (condvar_buf->empty) {
-        if (condvar_buf->closed) ERROR("tried to get in closed buffer");
-
         pthread_cond_wait(&condvar_buf->cv_empty, &condvar_buf->mutex);
     }
 
     assert(condvar_buf->payload == expected_round);  // sanity check
     condvar_buf->empty = true;
 
-    pthread_cond_signal(&condvar_buf->cv_full);
-
+    condvar_buf->ack_payload = condvar_buf->payload;
+    condvar_buf->acked = true;
+    pthread_cond_signal(&condvar_buf->cv_acked);
     pthread_mutex_unlock(&condvar_buf->mutex);
 }
