@@ -20,7 +20,8 @@ void channel_futex_init(void) {
 
     if (futex_buf == MAP_FAILED) ERROR("mmap failed");
 
-    futex_buf->empty = 1;
+    futex_buf->empty = 1; // true
+    futex_buf->acked = 0; // false
 }
 
 void channel_futex_send(int round) {
@@ -31,6 +32,13 @@ void channel_futex_send(int round) {
     futex_buf->payload = round;
     futex_buf->empty = 0; /*not empty*/
     atomic_notify(&futex_buf->empty, 1);
+
+    // wait for ack
+    while (!futex_buf->acked)
+        atomic_wait(&futex_buf->acked, 0);
+
+    assert(futex_buf->ack_payload == round);
+    futex_buf->acked = 0; // reset ack flag
 }
 
 void channel_futex_recv(int expected_round) {
@@ -40,5 +48,10 @@ void channel_futex_recv(int expected_round) {
 
     assert(futex_buf->payload == expected_round);
     futex_buf->empty = 1; /*set to empty*/
-    atomic_notify(&futex_buf->empty, 1);
+    // atomic_notify(&futex_buf->empty, 1); // TODO see if needed
+
+    // send ack
+    futex_buf->ack_payload = futex_buf->payload;
+    futex_buf->acked = 1;
+    atomic_notify(&futex_buf->acked, 1);
 }

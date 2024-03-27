@@ -11,9 +11,9 @@
 #include "ipc_runner.h"
 
 struct channel_futex {
-    int payload;
+    int payload, ack_payload;
 
-    uint32_t empty;
+    uint32_t empty, acked;
 };
 
 extern struct channel_futex *futex_buf;

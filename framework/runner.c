@@ -6,8 +6,8 @@
 #include "ipc_pipe.h"
 #include "ipc_socket.h"
 
-#define IPC_CONDVAR_BENCH
-//#define IPC_FUTEX_BENCH
+// #define IPC_CONDVAR_BENCH
+#define IPC_FUTEX_BENCH
 //#define IPC_ATOMIC_BENCH
 // #define IPC_PIPE_BENCH
 // #define IPC_SOCKET_BENCH
