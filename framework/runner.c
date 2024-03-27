@@ -8,9 +8,9 @@
 
 // #define IPC_CONDVAR_BENCH
 // #define IPC_FUTEX_BENCH
-#define IPC_ATOMIC_BENCH
+// #define IPC_ATOMIC_BENCH
 // #define IPC_PIPE_BENCH
-// #define IPC_SOCKET_BENCH
+#define IPC_SOCKET_BENCH
 
 void check(int ret, const char *errormsg) {
     if (ret != 0) {
@@ -131,10 +131,6 @@ int main(int argc, char **argv) {
             #ifdef IPC_PIPE_BENCH
                 // need to close one end of pipe
                 channel_pipe_child_init();
-            #endif
-
-            #ifdef IPC_SOCKET_BENCH
-                channel_socket_child_init();
             #endif
 
             child_warmup();
