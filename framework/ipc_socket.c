@@ -36,7 +36,7 @@ void channel_socket_init(void) {
 void send_int_over_socket(int value, FILE *sender) {
     // serialize int to char
     for (int i = 0; i < (sizeof(int) / sizeof(char)); i++) {
-        char byte = (value >> (8 * i)) & 0xFF;
+        char byte = int_to_byte(value, i);
         putc(byte, sender);
     }
 
@@ -47,7 +47,8 @@ void recv_int_over_socket(int expected_value, FILE *recver) {
     // decode int from chars
     int value = 0;
     for (int i = 0; i < (sizeof(int) / sizeof(char)); i++) {
-        value = value + (fgetc(recver) << 8 * i);
+        int byte = fgetc(recver);
+        value += byte_to_int(byte, i);
     }
 
     assert(value == expected_value);

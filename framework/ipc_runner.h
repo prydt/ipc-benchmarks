@@ -28,6 +28,10 @@
 
 void check(int ret, const char* errormsg);
 
+// helper functions for serialization
+char int_to_byte(int value, int index);
+int byte_to_int(int value, int index);
+
 // enum data_mechanism {
 //     MMAP, // implemented
 
