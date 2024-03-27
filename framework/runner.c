@@ -6,11 +6,15 @@
 #include "ipc_pipe.h"
 #include "ipc_socket.h"
 
-// #define IPC_CONDVAR_BENCH
+#define IPC_CONDVAR_BENCH
 // #define IPC_FUTEX_BENCH
 // #define IPC_ATOMIC_BENCH
-#define IPC_PIPE_BENCH
+// #define IPC_PIPE_BENCH
 // #define IPC_SOCKET_BENCH
+
+// #define IPC_CPU_SAME
+// #define IPC_CPU_HYPERTHREAD
+#define IPC_CPU_DIFFERENT
 
 void ipc_init() {
 #ifdef IPC_CONDVAR_BENCH
@@ -106,12 +110,15 @@ int main(int argc, char **argv) {
 
     // TODO argument to set CPU affinity: same core, same hyperthreaded core,
     // different cores
+
+
     cpu_set_t cpuset;
     CPU_ZERO(&cpuset);
     CPU_SET(0, &cpuset);
+
     check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
           "failed to set CPU affinity");
-
+    
     const long PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
 
     ipc_init();
@@ -121,6 +128,26 @@ int main(int argc, char **argv) {
             ERROR("failed to fork()");
 
         case 0:  // child
+            #ifdef IPC_CPU_SAME
+            #endif
+
+            #ifdef IPC_CPU_HYPERTHREAD
+            // CPU 0 and 1 are hyperthreaded (siblings)
+            CPU_ZERO(&cpuset);
+            CPU_SET(1, &cpuset);
+            check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
+                "failed to set CPU affinity");
+            #endif
+
+            #ifdef IPC_CPU_DIFFERENT
+            // CPU 0 and 2 are different cores
+            CPU_ZERO(&cpuset);
+            CPU_SET(2, &cpuset);
+            check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
+                "failed to set CPU affinity");
+            #endif
+
+
             #ifdef IPC_PIPE_BENCH
                 // need to close one end of pipe
                 channel_pipe_child_init();

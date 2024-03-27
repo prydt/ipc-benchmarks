@@ -17,7 +17,7 @@
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define NUM_ITER (1000 * 10)
+#define NUM_ITER (1000 * 1000)
 #define NUM_WARMUP 1000
 
 #define ERROR(message)                                                      \
