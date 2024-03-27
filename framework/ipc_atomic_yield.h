@@ -3,17 +3,17 @@
  * atomics
  */
 
-#ifndef IPC_ATOMIC_H_
-#define IPC_ATOMIC_H_
+#ifndef IPC_ATOMIC_YIELD_H_
+#define IPC_ATOMIC_YIELD_H_
 
 #include <stdatomic.h>
 
 #include "ipc_runner.h"
 
 struct channel_atomic {
-    int payload;
+    int payload, ack_payload;
 
-    atomic_bool empty;
+    atomic_bool empty, acked;
 };
 
 extern struct channel_atomic *atomic_buf;

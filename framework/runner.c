@@ -1,14 +1,14 @@
 #include "ipc_runner.h"
 
-#include "ipc_atomic.h"
+#include "ipc_atomic_yield.h"
 #include "ipc_condvar.h"
 #include "ipc_futex.h"
 #include "ipc_pipe.h"
 #include "ipc_socket.h"
 
 // #define IPC_CONDVAR_BENCH
-#define IPC_FUTEX_BENCH
-//#define IPC_ATOMIC_BENCH
+// #define IPC_FUTEX_BENCH
+#define IPC_ATOMIC_BENCH
 // #define IPC_PIPE_BENCH
 // #define IPC_SOCKET_BENCH
 
