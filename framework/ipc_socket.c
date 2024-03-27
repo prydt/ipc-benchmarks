@@ -35,7 +35,7 @@ void channel_socket_init(void) {
 
 void send_int_over_socket(int value, FILE *sender) {
     // serialize int to char
-    for (int i = 0; i < (sizeof(int) / sizeof(char)); i++) {
+    for (int i = 0; i < sizeof(int) / sizeof(char); i++) {
         char byte = int_to_byte(value, i);
         putc(byte, sender);
     }

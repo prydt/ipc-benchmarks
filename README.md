@@ -13,4 +13,5 @@ ACKED
  - condvars
  - futex
  - atomics (yield)
- - socket
+ - sockets
+ - pipes
