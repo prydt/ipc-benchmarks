@@ -7,3 +7,10 @@ Benchmarks implemented
  - [ ] shared memory + C11 atomics (spin)
  - [x] unix sockets
  - [x] pipes
+
+
+# Build
+```bash
+meson setup builddir && cd builddir
+meson compile
+```

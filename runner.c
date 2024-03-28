@@ -94,9 +94,42 @@ void parent_benchmark() {
     }
 }
 
+// for testing
+void print_config() {
+#ifdef IPC_CONDVAR_BENCH
+    printf("condvar ");
+#endif
+
+#ifdef IPC_FUTEX_BENCH
+    printf("futex ");
+#endif
+
+#ifdef IPC_ATOMIC_YIELD_BENCH
+    printf("atomic_yield ");
+#endif
+
+#ifdef IPC_PIPE_BENCH
+    printf("pipe ");
+#endif
+
+#ifdef IPC_SOCKET_BENCH
+    printf("socket ");
+#endif
+
+
+#ifdef IPC_CPU_SAME
+    printf("cpu same\n");
+#endif
+#ifdef IPC_CPU_HYPERTHREAD
+    printf("cpu hyperthread\n");
+#endif
+#ifdef IPC_CPU_DIFFERENT
+    printf("cpu different\n");
+#endif
+}
+
 int main(int argc, char **argv) {
-    // TODO read arguments
-    // struct benchmark_config cfg = {MMAP, CONDITION_VARIABLES, COMBINED_NONE};
+    // print_config();
 
     // TODO argument to set CPU affinity: same core, same hyperthreaded core,
     // different cores
@@ -110,7 +143,7 @@ int main(int argc, char **argv) {
     check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
           "failed to set CPU affinity");
     
-    const long PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
+    // const long PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
 
     ipc_init();
 
