@@ -1,4 +1,4 @@
-project('ipc-benchmarks', 'c')
+project('ipc-benchmarks', 'c', default_options: ['debug=true', 'warning_level=1'])
 
 cpu_configs = [
     ['same', '-DIPC_CPU_SAME'],
@@ -22,8 +22,6 @@ src = [
     'runner.c',
     'utils.c'
 ]
-
-add_global_arguments(['-Wall', '-g'], language:'c')
 
 thread_dep = dependency('threads')
 
