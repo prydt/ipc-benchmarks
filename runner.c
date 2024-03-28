@@ -6,16 +6,6 @@
 #include "ipc_pipe.h"
 #include "ipc_socket.h"
 
-#define IPC_CONDVAR_BENCH
-// #define IPC_FUTEX_BENCH
-// #define IPC_ATOMIC_BENCH
-// #define IPC_PIPE_BENCH
-// #define IPC_SOCKET_BENCH
-
-// #define IPC_CPU_SAME
-// #define IPC_CPU_HYPERTHREAD
-#define IPC_CPU_DIFFERENT
-
 void ipc_init() {
 #ifdef IPC_CONDVAR_BENCH
     channel_cv_init();
@@ -25,7 +15,7 @@ void ipc_init() {
     channel_futex_init();
 #endif
 
-#ifdef IPC_ATOMIC_BENCH
+#ifdef IPC_ATOMIC_YIELD_BENCH
     channel_atomic_init();
 #endif
 
@@ -47,7 +37,7 @@ void ipc_send(int round) {
     channel_futex_send(round);
 #endif
 
-#ifdef IPC_ATOMIC_BENCH
+#ifdef IPC_ATOMIC_YIELD_BENCH
     channel_atomic_send(round);
 #endif
 
@@ -69,7 +59,7 @@ void ipc_recv(int expected_round) {
     channel_futex_recv(expected_round);
 #endif
 
-#ifdef IPC_ATOMIC_BENCH
+#ifdef IPC_ATOMIC_YIELD_BENCH
     channel_atomic_recv(expected_round);
 #endif
 
@@ -112,8 +102,9 @@ int main(int argc, char **argv) {
     // different cores
 
 
-    cpu_set_t cpuset;
+    cpu_set_t cpuset, other_cpuset;
     CPU_ZERO(&cpuset);
+    CPU_ZERO(&other_cpuset);
     CPU_SET(0, &cpuset);
 
     check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
@@ -133,17 +124,15 @@ int main(int argc, char **argv) {
 
             #ifdef IPC_CPU_HYPERTHREAD
             // CPU 0 and 1 are hyperthreaded (siblings)
-            CPU_ZERO(&cpuset);
-            CPU_SET(1, &cpuset);
-            check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
+            CPU_SET(1, &other_cpuset);
+            check(pthread_setaffinity_np(pthread_self(), sizeof(other_cpuset), &other_cpuset),
                 "failed to set CPU affinity");
             #endif
 
             #ifdef IPC_CPU_DIFFERENT
             // CPU 0 and 2 are different cores
-            CPU_ZERO(&cpuset);
-            CPU_SET(2, &cpuset);
-            check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
+            CPU_SET(2, &other_cpuset);
+            check(pthread_setaffinity_np(pthread_self(), sizeof(other_cpuset), &other_cpuset),
                 "failed to set CPU affinity");
             #endif
 
