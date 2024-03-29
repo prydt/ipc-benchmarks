@@ -20,6 +20,9 @@
 #define NUM_ITER (1000 * 100)
 #define NUM_WARMUP 1000
 
+// #define NUM_ITER (100)
+// #define NUM_WARMUP (1)
+
 #define ERROR(message)                                                      \
     do {                                                                    \
         fprintf(stderr, "ERROR (%s:%d) %s\n", __FILE__, __LINE__, message); \

@@ -1,10 +1,10 @@
 #include "ipc_atomic_yield.h"
 
-struct channel_atomic *atomic_buf;
+struct channel_atomic_yield *atomic_buf;
 
-void channel_atomic_init(void) {
-    atomic_buf = (struct channel_atomic *)mmap(
-        NULL, sizeof(struct channel_atomic), PROT_READ | PROT_WRITE,
+void channel_atomic_yield_init(void) {
+    atomic_buf = (struct channel_atomic_yield *)mmap(
+        NULL, sizeof(struct channel_atomic_yield), PROT_READ | PROT_WRITE,
         MAP_SHARED | MAP_ANONYMOUS, -1, 0);
 
     if (atomic_buf == MAP_FAILED) ERROR("mmap failed");
@@ -13,7 +13,7 @@ void channel_atomic_init(void) {
     atomic_buf->acked = false;
 }
 
-void channel_atomic_send(int round) {
+void channel_atomic_yield_send(int round) {
     // TODO maybe replace with proper spinning?
     while (!atomic_load_explicit(&atomic_buf->empty,
                                  memory_order_seq_cst))  // wait until empty
@@ -32,7 +32,7 @@ void channel_atomic_send(int round) {
     atomic_store_explicit(&atomic_buf->acked, false, memory_order_seq_cst);
 }
 
-void channel_atomic_recv(int expected_round) {
+void channel_atomic_yield_recv(int expected_round) {
     while (atomic_load_explicit(&atomic_buf->empty, memory_order_seq_cst))
         sched_yield();
 

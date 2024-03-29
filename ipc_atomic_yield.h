@@ -10,16 +10,16 @@
 
 #include "ipc_runner.h"
 
-struct channel_atomic {
+struct channel_atomic_yield {
     int payload, ack_payload;
 
     atomic_bool empty, acked;
 };
 
-extern struct channel_atomic *atomic_buf;
+extern struct channel_atomic_yield *atomic_buf;
 
-void channel_atomic_init(void);
-void channel_atomic_send(int round);
-void channel_atomic_recv(int expected_round);
+void channel_atomic_yield_init(void);
+void channel_atomic_yield_send(int round);
+void channel_atomic_yield_recv(int expected_round);
 
 #endif

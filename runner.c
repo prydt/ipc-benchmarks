@@ -1,5 +1,6 @@
 #include "ipc_runner.h"
 
+#include "ipc_atomic_spin.h"
 #include "ipc_atomic_yield.h"
 #include "ipc_condvar.h"
 #include "ipc_futex.h"
@@ -16,7 +17,11 @@ void ipc_init() {
 #endif
 
 #ifdef IPC_ATOMIC_YIELD_BENCH
-    channel_atomic_init();
+    channel_atomic_yield_init();
+#endif
+
+#ifdef IPC_ATOMIC_SPIN_BENCH
+    channel_atomic_spin_init();
 #endif
 
 #ifdef IPC_PIPE_BENCH
@@ -38,7 +43,11 @@ void ipc_send(int round) {
 #endif
 
 #ifdef IPC_ATOMIC_YIELD_BENCH
-    channel_atomic_send(round);
+    channel_atomic_yield_send(round);
+#endif
+
+#ifdef IPC_ATOMIC_SPIN_BENCH
+    channel_atomic_spin_send(round);
 #endif
 
 #ifdef IPC_PIPE_BENCH
@@ -60,7 +69,11 @@ void ipc_recv(int expected_round) {
 #endif
 
 #ifdef IPC_ATOMIC_YIELD_BENCH
-    channel_atomic_recv(expected_round);
+    channel_atomic_yield_recv(expected_round);
+#endif
+
+#ifdef IPC_ATOMIC_SPIN_BENCH
+    channel_atomic_spin_recv(expected_round);
 #endif
 
 #ifdef IPC_PIPE_BENCH
@@ -108,6 +121,10 @@ void print_config() {
     printf("atomic_yield ");
 #endif
 
+#ifdef IPC_ATOMIC_SPIN_BENCH
+    printf("atomic_spin ");
+#endif
+
 #ifdef IPC_PIPE_BENCH
     printf("pipe ");
 #endif
@@ -128,6 +145,17 @@ void print_config() {
 #endif
 }
 
+void print_cpu_set(cpu_set_t *cpusetp, const char *name) {
+    printf("%s: ",name);
+    int num_cores = (int) sysconf(_SC_NPROCESSORS_ONLN);
+    for (int i = 0; i < num_cores; i++) {
+        if (CPU_ISSET(i, cpusetp)) {
+            printf("core %d, ", i);
+        }
+    }
+    printf("\n");
+}
+
 int main(int argc, char **argv) {
     // print_config();
 
@@ -142,6 +170,7 @@ int main(int argc, char **argv) {
 
     check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
           "failed to set CPU affinity");
+    // print_cpu_set(&cpuset, "parent");
     
     // const long PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
 
@@ -153,20 +182,26 @@ int main(int argc, char **argv) {
 
         case 0:  // child
             #ifdef IPC_CPU_SAME
+                CPU_SET(0, &other_cpuset);
+                check(pthread_setaffinity_np(pthread_self(), sizeof(other_cpuset), &other_cpuset),
+                    "failed to set CPU affinity");
+                // print_cpu_set(&other_cpuset, "child");
             #endif
 
             #ifdef IPC_CPU_HYPERTHREAD
-            // CPU 0 and 1 are hyperthreaded (siblings)
-            CPU_SET(1, &other_cpuset);
-            check(pthread_setaffinity_np(pthread_self(), sizeof(other_cpuset), &other_cpuset),
-                "failed to set CPU affinity");
+                // CPU 0 and 1 are hyperthreaded (siblings)
+                CPU_SET(1, &other_cpuset);
+                check(pthread_setaffinity_np(pthread_self(), sizeof(other_cpuset), &other_cpuset),
+                    "failed to set CPU affinity");
+                // print_cpu_set(&other_cpuset, "child");
             #endif
 
             #ifdef IPC_CPU_DIFFERENT
-            // CPU 0 and 2 are different cores
-            CPU_SET(2, &other_cpuset);
-            check(pthread_setaffinity_np(pthread_self(), sizeof(other_cpuset), &other_cpuset),
-                "failed to set CPU affinity");
+                // CPU 0 and 2 are different cores
+                CPU_SET(2, &other_cpuset);
+                check(pthread_setaffinity_np(pthread_self(), sizeof(other_cpuset), &other_cpuset),
+                    "failed to set CPU affinity");
+                // print_cpu_set(&other_cpuset, "child");
             #endif
 
 
