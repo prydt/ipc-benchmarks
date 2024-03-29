@@ -9,11 +9,13 @@ program_configs = [
     ['condvar', '-DIPC_CONDVAR_BENCH'],
     ['futex', '-DIPC_FUTEX_BENCH'],
     ['atomic_yield', '-DIPC_ATOMIC_YIELD_BENCH'],
+    ['atomic_spin', '-DIPC_ATOMIC_SPIN_BENCH'],
     ['pipe', '-DIPC_PIPE_BENCH'],
     ['socket', '-DIPC_SOCKET_BENCH']
 ]
 
 src = [
+    'ipc_atomic_spin.c',
     'ipc_atomic_yield.c',
     'ipc_condvar.c',
     'ipc_futex.c',
