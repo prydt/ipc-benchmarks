@@ -7,6 +7,7 @@
 #include "ipc_pipe.h"
 #include "ipc_socket.h"
 #include "ipc_sv_mq.h"
+#include "ipc_sv_sema.h"
 
 void ipc_init() {
 #ifdef IPC_CONDVAR_BENCH
@@ -35,6 +36,10 @@ void ipc_init() {
 
 #ifdef IPC_SV_MQ_BENCH
     channel_sv_mq_init();
+#endif
+
+#ifdef IPC_SV_SEMA_BENCH
+    channel_sv_sema_init();
 #endif
 }
 
@@ -66,6 +71,10 @@ void ipc_send(int round) {
 #ifdef IPC_SV_MQ_BENCH
     channel_sv_mq_send(round);
 #endif
+
+#ifdef IPC_SV_SEMA_BENCH
+    channel_sv_sema_send(round);
+#endif
 }
 
 void ipc_recv(int expected_round) {
@@ -95,6 +104,10 @@ void ipc_recv(int expected_round) {
 
 #ifdef IPC_SV_MQ_BENCH
     channel_sv_mq_recv(expected_round);
+#endif
+
+#ifdef IPC_SV_SEMA_BENCH
+    channel_sv_sema_recv(expected_round);
 #endif
 }
 
@@ -150,6 +163,9 @@ void print_config() {
     printf("System V Message Queue ");
 #endif
 
+#ifdef IPC_SV_SEMA_BENCH
+    printf("System V Semaphore ");
+#endif
 
 
 #ifdef IPC_CPU_SAME
@@ -185,7 +201,7 @@ int main(int argc, char **argv) {
     check(pthread_setaffinity_np(pthread_self(), sizeof(cpuset), &cpuset),
           "failed to set CPU affinity");
     // print_cpu_set(&cpuset, "parent");
-    
+
     // const long PAGE_SIZE = sysconf(_SC_PAGE_SIZE);
 
     ipc_init();

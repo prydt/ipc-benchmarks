@@ -12,7 +12,8 @@ program_configs = [
     ['atomic_spin', '-DIPC_ATOMIC_SPIN_BENCH'],
     ['pipe', '-DIPC_PIPE_BENCH'],
     ['socket', '-DIPC_SOCKET_BENCH'],
-    ['sv_mq', '-DIPC_SV_MQ_BENCH']
+    ['sv_mq', '-DIPC_SV_MQ_BENCH'],
+    ['sv_sema', '-DIPC_SV_SEMA_BENCH']
 ]
 
 src = [
@@ -23,6 +24,7 @@ src = [
     'ipc_pipe.c',
     'ipc_socket.c',
     'ipc_sv_mq.c',
+    'ipc_sv_sema.c',
     'runner.c',
     'utils.c'
 ]

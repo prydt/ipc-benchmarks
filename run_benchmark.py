@@ -6,7 +6,7 @@ from statistics import median
 num_iters = 1000 * 100
 fieldnames = ['ipc', 'same CPU time (ns)', 'hyperthread core time (ns)', 'different core time (ns)']
 
-ipc_types = ['condvar', 'futex', 'atomic_yield', 'atomic_spin','socket', 'pipe', 'sv_mq']
+ipc_types = ['condvar', 'futex', 'atomic_yield', 'atomic_spin','socket', 'pipe', 'sv_mq', 'sv_sema']
 
 def run_command(name):
     return int(subprocess.run(['./' + name], capture_output=True).stdout.decode('utf-8').strip())
