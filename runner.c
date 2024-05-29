@@ -6,6 +6,7 @@
 #include "ipc_futex.h"
 #include "ipc_pipe.h"
 #include "ipc_socket.h"
+#include "ipc_sv_mq.h"
 
 void ipc_init() {
 #ifdef IPC_CONDVAR_BENCH
@@ -30,6 +31,10 @@ void ipc_init() {
 
 #ifdef IPC_SOCKET_BENCH
     channel_socket_init();
+#endif
+
+#ifdef IPC_SV_MQ_BENCH
+    channel_sv_mq_init();
 #endif
 }
 
@@ -57,6 +62,10 @@ void ipc_send(int round) {
 #ifdef IPC_SOCKET_BENCH
     channel_socket_send(round);
 #endif
+
+#ifdef IPC_SV_MQ_BENCH
+    channel_sv_mq_send(round);
+#endif
 }
 
 void ipc_recv(int expected_round) {
@@ -82,6 +91,10 @@ void ipc_recv(int expected_round) {
 
 #ifdef IPC_SOCKET_BENCH
     channel_socket_recv(expected_round);
+#endif
+
+#ifdef IPC_SV_MQ_BENCH
+    channel_sv_mq_recv(expected_round);
 #endif
 }
 
@@ -133,6 +146,11 @@ void print_config() {
     printf("socket ");
 #endif
 
+#ifdef IPC_SV_MQ_BENCH
+    printf("System V Message Queue ");
+#endif
+
+
 
 #ifdef IPC_CPU_SAME
     printf("cpu same\n");
@@ -158,10 +176,6 @@ void print_cpu_set(cpu_set_t *cpusetp, const char *name) {
 
 int main(int argc, char **argv) {
     // print_config();
-
-    // TODO argument to set CPU affinity: same core, same hyperthreaded core,
-    // different cores
-
 
     cpu_set_t cpuset, other_cpuset;
     CPU_ZERO(&cpuset);

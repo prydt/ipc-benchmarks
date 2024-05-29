@@ -11,7 +11,8 @@ program_configs = [
     ['atomic_yield', '-DIPC_ATOMIC_YIELD_BENCH'],
     ['atomic_spin', '-DIPC_ATOMIC_SPIN_BENCH'],
     ['pipe', '-DIPC_PIPE_BENCH'],
-    ['socket', '-DIPC_SOCKET_BENCH']
+    ['socket', '-DIPC_SOCKET_BENCH'],
+    ['sv_mq', '-DIPC_SV_MQ_BENCH']
 ]
 
 src = [
@@ -21,6 +22,7 @@ src = [
     'ipc_futex.c',
     'ipc_pipe.c',
     'ipc_socket.c',
+    'ipc_sv_mq.c',
     'runner.c',
     'utils.c'
 ]
