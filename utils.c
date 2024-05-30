@@ -7,7 +7,7 @@ void check(int ret, const char *errormsg) {
     }
 }
 
-char int_to_byte(int value, int index) {
+unsigned char int_to_byte(int value, size_t index) {
     return (value >> (8 * index)) & 0xFF;
 }
 

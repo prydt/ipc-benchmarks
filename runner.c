@@ -163,6 +163,10 @@ void print_config() {
     printf("System V Message Queue ");
 #endif
 
+#ifdef IPC_POSIX_MQ_BENCH
+    printf("POSIX Message Queue ");
+#endif
+
 #ifdef IPC_SV_SEMA_BENCH
     printf("System V Semaphore ");
 #endif
@@ -259,6 +263,10 @@ int main(int argc, char **argv) {
             printf("%ld\n", (diff.tv_sec * 1000000000) + diff.tv_nsec);
 
             wait(NULL);
+
+            #if defined(IPC_SV_MQ_BENCH) || defined(IPC_POSIX_MQ_BENCH)
+                channel_sv_mq_close();
+            #endif
     }
 
     return EXIT_SUCCESS;

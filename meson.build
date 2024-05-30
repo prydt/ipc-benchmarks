@@ -13,6 +13,7 @@ program_configs = [
     ['pipe', '-DIPC_PIPE_BENCH'],
     ['socket', '-DIPC_SOCKET_BENCH'],
     ['sv_mq', '-DIPC_SV_MQ_BENCH'],
+    ['posix_mq', '-DIPC_POSIX_MQ_BENCH'],
     ['sv_sema', '-DIPC_SV_SEMA_BENCH']
 ]
 

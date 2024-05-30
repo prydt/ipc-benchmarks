@@ -32,39 +32,7 @@
 void check(int ret, const char* errormsg);
 
 // helper functions for serialization
-char int_to_byte(int value, int index);
+unsigned char int_to_byte(int value, size_t index);
 int byte_to_int(int value, int index);
-
-// enum data_mechanism {
-//     MMAP, // implemented
-
-//     DATA_NONE
-// };
-
-// enum sync_mechanism {
-//     CONDITION_VARIABLES,    // implemented
-//     MUTEX,
-//     SEMAPHORE,
-//     ATOMICS,
-//     FUTEX,                  // implemented
-//     SPINLOCKS,
-//     SIGNALS,
-
-//     SYNC_NONE
-// };
-
-// enum combined_mechanism {
-//     PIPES,
-//     SOCKETS,
-//     MESSAGE_QUEUES,
-
-//     COMBINED_NONE
-// };
-
-// struct benchmark_config {
-//     enum data_mechanism data;
-//     enum sync_mechanism sync;
-//     enum combined_mechanism combined;
-// };
 
 #endif
