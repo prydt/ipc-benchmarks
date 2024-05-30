@@ -26,6 +26,7 @@ src = [
     'ipc_socket.c',
     'ipc_sv_mq.c',
     'ipc_sv_sema.c',
+    'ipc_posix_mq.c',
     'runner.c',
     'utils.c'
 ]
