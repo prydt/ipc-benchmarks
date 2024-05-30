@@ -25,7 +25,6 @@ static void send_mq(mqd_t queue, int round) {
     for (size_t i = 0; i < msglen; i++) {
         msg[i] = int_to_byte(round, i);
     }
-    // printf("send: %d %d %d %d\n", msg[0], msg[1], msg[2], msg[3]);
 
     check(mq_send(queue, msg, msglen, 0), "mq_send");
 }
@@ -37,8 +36,6 @@ static int recv_mq(mqd_t queue) {
         perror("mq_receive");
         exit(-1);
     }
-
-    // printf("recv: %d %d %d %d\n", msg[0], msg[1], msg[2], msg[3]);
 
     int value = 0;
     for (int i = 0; i < msglen; i++) {
