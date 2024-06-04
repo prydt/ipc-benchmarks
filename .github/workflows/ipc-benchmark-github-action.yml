@@ -4,10 +4,12 @@ on:
     paths:
       - "**.c"
       - "**.h"
+      - "**.yml"
   pull_request:
     paths:
       - "**.c"
       - "**.h"
+      - "**.yml"
 jobs:
   build:
     name: Build and Test on ${{ matrix.os }} with Meson v${{ matrix.meson_version }}
