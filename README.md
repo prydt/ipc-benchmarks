@@ -7,6 +7,10 @@ Benchmarks implemented
  - [x] shared memory + C11 atomics (spin)
  - [x] unix sockets
  - [x] pipes
+ - [x] POSIX Message Queues
+ - [ ] POSIX Semaphores
+ - [x] System V Message Queues
+ - [x] System V Semaphores
 
 
 # Build
