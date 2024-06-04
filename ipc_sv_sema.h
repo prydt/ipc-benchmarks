@@ -29,8 +29,6 @@ union semun {
 struct channel_sv_sema {
     key_t sem_id;
     int payload, ack_payload;
-
-    bool empty, acked;
 };
 
 extern struct channel_sv_sema *sv_sema_buf;

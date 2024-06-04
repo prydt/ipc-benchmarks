@@ -9,6 +9,7 @@
 #include "ipc_sv_mq.h"
 #include "ipc_sv_sema.h"
 #include "ipc_posix_mq.h"
+#include "ipc_posix_sema.h"
 
 void ipc_init() {
 #ifdef IPC_CONDVAR_BENCH
@@ -45,6 +46,10 @@ void ipc_init() {
 
 #ifdef IPC_POSIX_MQ_BENCH
     channel_posix_mq_init();
+#endif
+
+#ifdef IPC_POSIX_SEMA_BENCH
+    channel_posix_sema_init();
 #endif
 }
 
@@ -84,6 +89,10 @@ void ipc_send(int round) {
 #ifdef IPC_POSIX_MQ_BENCH
     channel_posix_mq_send(round);
 #endif
+
+#ifdef IPC_POSIX_SEMA_BENCH
+    channel_posix_sema_send(round);
+#endif
 }
 
 void ipc_recv(int expected_round) {
@@ -121,6 +130,10 @@ void ipc_recv(int expected_round) {
 
 #ifdef IPC_POSIX_MQ_BENCH
     channel_posix_mq_recv(expected_round);
+#endif
+
+#ifdef IPC_POSIX_SEMA_BENCH
+    channel_posix_sema_recv(expected_round);
 #endif
 }
 
@@ -188,6 +201,9 @@ void print_config() {
     printf("POSIX Message Queue");
 #endif
 
+#ifdef IPC_POSIX_SEMA_BENCH
+    printf("POSIX Semaphore");
+#endif
 
 
 #ifdef IPC_CPU_SAME

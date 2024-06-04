@@ -14,7 +14,8 @@ program_configs = [
     ['socket', '-DIPC_SOCKET_BENCH'],
     ['sv_mq', '-DIPC_SV_MQ_BENCH'],
     ['posix_mq', '-DIPC_POSIX_MQ_BENCH'],
-    ['sv_sema', '-DIPC_SV_SEMA_BENCH']
+    ['sv_sema', '-DIPC_SV_SEMA_BENCH'],
+    ['posix_sema', '-DIPC_POSIX_SEMA_BENCH']
 ]
 
 src = [
@@ -27,6 +28,7 @@ src = [
     'ipc_sv_mq.c',
     'ipc_sv_sema.c',
     'ipc_posix_mq.c',
+    'ipc_posix_sema.c',
     'runner.c',
     'utils.c'
 ]

@@ -20,9 +20,6 @@ void channel_sv_sema_init(void) {
     check(semctl(sv_sema_buf->sem_id, SV_SEMA_READY, SETVAL, config), "semctl SETVAL READY");
     config.val = 0;
     check(semctl(sv_sema_buf->sem_id, SV_SEMA_READY_ACK, SETVAL, config), "semctl SETVAL READY ACK");
-
-    sv_sema_buf->empty = true;
-    sv_sema_buf->acked = false;
 }
 
 static void sv_wait(int semnum) {
