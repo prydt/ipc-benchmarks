@@ -22,6 +22,9 @@ union semun {
 #endif
 };
 
+#define SV_SEMA_MUTEX 0
+#define SV_SEMA_READY 1
+#define SV_SEMA_READY_ACK 2
 
 struct channel_sv_sema {
     key_t sem_id;

@@ -9,67 +9,53 @@ void channel_sv_sema_init(void) {
 
     if (sv_sema_buf == MAP_FAILED) ERROR("mmap failed");
 
-    sv_sema_buf->sem_id = semget(IPC_PRIVATE, 1, 0666);
+    sv_sema_buf->sem_id = semget(IPC_PRIVATE, 3, 0666); // 0 = mutex, 1 = ready
     if (sv_sema_buf->sem_id == -1) {
         perror("semget");
         exit(-1);
     }
     union semun config = {.val = 1};
-    check(semctl(sv_sema_buf->sem_id, 0, SETVAL, config), "semctl SETVAL");
+    check(semctl(sv_sema_buf->sem_id, SV_SEMA_MUTEX, SETVAL, config), "semctl SETVAL");
+    config.val = 0;
+    check(semctl(sv_sema_buf->sem_id, SV_SEMA_READY, SETVAL, config), "semctl SETVAL READY");
+    config.val = 0;
+    check(semctl(sv_sema_buf->sem_id, SV_SEMA_READY_ACK, SETVAL, config), "semctl SETVAL READY ACK");
 
     sv_sema_buf->empty = true;
     sv_sema_buf->acked = false;
 }
 
-static void sv_lock() {
-    struct sembuf op = {.sem_num = 0, .sem_op = -1, .sem_flg = 0};
+static void sv_wait(int semnum) {
+    struct sembuf op = {.sem_num = semnum, .sem_op = -1, .sem_flg = 0};
     check(semop(sv_sema_buf->sem_id, &op, 1), "semop lock");
 }
-static void sv_unlock() {
-    struct sembuf op = {.sem_num = 0, .sem_op = 1, .sem_flg = 0};
+static void sv_signal(int semnum) {
+    struct sembuf op = {.sem_num = semnum, .sem_op = 1, .sem_flg = 0};
     check(semop(sv_sema_buf->sem_id, &op, 1), "semop unlock");
 }
 
 void channel_sv_sema_send(int round) {
-    sv_lock();
-    while (!sv_sema_buf->empty) {
-        sv_unlock();
-        sv_lock();  // Retry after unlocking
-    }
-
+    // produce payload
+    sv_wait(SV_SEMA_MUTEX);
     sv_sema_buf->payload = round;
-    sv_sema_buf->empty = false;
-    sv_unlock();
+    sv_signal(SV_SEMA_READY);
+    sv_signal(SV_SEMA_MUTEX);
 
-    sv_lock();
-    while (!sv_sema_buf->acked) {
-        sv_unlock();
-        sv_lock();  // Retry after unlocking
-    }
-
+    // receive ack
+    sv_wait(SV_SEMA_READY_ACK);
+    sv_wait(SV_SEMA_MUTEX);
     assert(sv_sema_buf->ack_payload == round);
-    sv_sema_buf->acked = false;
-    sv_unlock();
+    sv_signal(SV_SEMA_MUTEX);
 }
 
 void channel_sv_sema_recv(int expected_round) {
-    sv_lock();
-    while (sv_sema_buf->empty) {
-        sv_unlock();
-        sv_lock();  // Retry after unlocking
-    }
+    // receive payload
+    sv_wait(SV_SEMA_READY);
+    sv_wait(SV_SEMA_MUTEX);
+    assert(expected_round == sv_sema_buf->payload);
 
-    assert(sv_sema_buf->payload == expected_round);
-    sv_sema_buf->empty = true;
-    sv_unlock();
-
-    sv_lock();
-    while (sv_sema_buf->acked) {
-        sv_unlock();
-        sv_lock();  // Retry after unlocking
-    }
-
-    sv_sema_buf->ack_payload = expected_round;
-    sv_sema_buf->acked = true;
-    sv_unlock();
+    // produce ack
+    sv_sema_buf->ack_payload = sv_sema_buf->payload;
+    sv_signal(SV_SEMA_MUTEX);
+    sv_signal(SV_SEMA_READY_ACK);
 }
