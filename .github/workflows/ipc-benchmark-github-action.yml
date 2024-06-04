@@ -33,6 +33,8 @@ jobs:
         run: meson setup builddir/
         env:
           CC: gcc
+      - name: Build
+        run: meson compile -C builddir/
       - name: Run benchmark 
         run: cd builddir && python3 ../run_benchmark.py
       - name: Upload benchmark.csv
