@@ -34,11 +34,11 @@ src = [
 ]
 
 thread_dep = dependency('threads')
-# librt = meson.get_compiler('c').find_library('rt')
+librt = meson.get_compiler('c').find_library('rt')
 
 foreach c : cpu_configs
     foreach p : program_configs
         program_name = p[0] + '_' + c[0]
-        executable(program_name, src, c_args: [c[1], p[1]],  dependencies: [thread_dep])
+        executable(program_name, src, c_args: [c[1], p[1]],  dependencies: [thread_dep, librt])
     endforeach
 endforeach
