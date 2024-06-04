@@ -14,5 +14,3 @@ unsigned char int_to_byte(int value, size_t index) {
 int byte_to_int(int value, int index) {
     return value << 8 * index;
 }
-
-// TODO add my_assert

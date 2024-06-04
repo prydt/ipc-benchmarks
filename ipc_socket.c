@@ -51,7 +51,7 @@ void recv_int_over_socket(int expected_value, FILE *recver) {
         value += byte_to_int(byte, i);
     }
 
-    assert(value == expected_value);
+    m_assert(value == expected_value);
 }
 
 void channel_socket_send(int round) {

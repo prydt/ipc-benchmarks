@@ -28,7 +28,7 @@ void channel_atomic_yield_send(int round) {
                                  memory_order_seq_cst))  // wait until empty
         sched_yield();
 
-    assert(atomic_buf->ack_payload == round);
+    m_assert(atomic_buf->ack_payload == round);
     atomic_store_explicit(&atomic_buf->acked, false, memory_order_seq_cst);
 }
 
@@ -36,7 +36,7 @@ void channel_atomic_yield_recv(int expected_round) {
     while (atomic_load_explicit(&atomic_buf->empty, memory_order_seq_cst))
         sched_yield();
 
-    assert(atomic_buf->payload == expected_round);
+    m_assert(atomic_buf->payload == expected_round);
     atomic_store_explicit(&atomic_buf->empty, true, memory_order_seq_cst);
 
     // do ack

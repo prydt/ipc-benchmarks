@@ -4,7 +4,6 @@
 #define _GNU_SOURCE /* for cpuset functions */
 #include <sched.h>
 
-#include <assert.h>
 #include <errno.h>
 #include <pthread.h>
 #include <semaphore.h>
@@ -28,6 +27,15 @@
         fprintf(stderr, "ERROR (%s:%d) %s\n", __FILE__, __LINE__, message); \
         exit(-1);                                                           \
     } while (0)
+
+
+#define m_assert(expression)                                        \
+    do {                                                            \
+        if ((expression) == 0) {                                      \
+            printf("ASSERT FAILED on %s:%d\n", __FILE__, __LINE__); \
+            exit(-1);                                               \
+        }                                                           \
+    } while(0);                                                     \
 
 void check(int ret, const char* errormsg);
 

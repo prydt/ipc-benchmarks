@@ -22,7 +22,7 @@ static void recv_mq(int expected_round, long mtype) {
         perror("msgrcv");
         exit(-1);
     }
-    assert(expected_round == msg.round);
+    m_assert(expected_round == msg.round);
 }
 
 static void close_mq() {

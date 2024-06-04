@@ -32,7 +32,7 @@ static inline void pipe_recv(int expected_value, FILE *recvpipe) {
         value += byte_to_int(byte, i);
     }
     
-    assert(value == expected_value);
+    m_assert(value == expected_value);
 }
 
 void channel_pipe_send(int round) {

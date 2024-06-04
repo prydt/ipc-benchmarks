@@ -24,7 +24,7 @@ void channel_posix_sema_send(int round) {
     // receive ack
     sem_wait(&posix_sema_buf->ack_ready);
     sem_wait(&posix_sema_buf->mutex);
-    assert(posix_sema_buf->ack_payload == round);
+    m_assert(posix_sema_buf->ack_payload == round);
     sem_post(&posix_sema_buf->mutex);
 }
 
@@ -32,7 +32,7 @@ void channel_posix_sema_recv(int expected_round) {
     // receive payload
     sem_wait(&posix_sema_buf->ready);
     sem_wait(&posix_sema_buf->mutex);
-    assert(expected_round == posix_sema_buf->payload);
+    m_assert(expected_round == posix_sema_buf->payload);
 
     // produce ack
     posix_sema_buf->ack_payload = posix_sema_buf->payload;

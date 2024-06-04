@@ -37,7 +37,7 @@ void channel_futex_send(int round) {
     while (!futex_buf->acked)
         atomic_wait(&futex_buf->acked, 0);
 
-    assert(futex_buf->ack_payload == round);
+    m_assert(futex_buf->ack_payload == round);
     futex_buf->acked = 0; // reset ack flag
 }
 
@@ -46,7 +46,7 @@ void channel_futex_recv(int expected_round) {
         atomic_wait(&futex_buf->empty,
                     1);  // wait while empty == 1 (still empty)
 
-    assert(futex_buf->payload == expected_round);
+    m_assert(futex_buf->payload == expected_round);
     futex_buf->empty = 1; /*set to empty*/
     // atomic_notify(&futex_buf->empty, 1); // TODO see if needed
 

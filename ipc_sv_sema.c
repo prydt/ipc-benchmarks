@@ -41,7 +41,7 @@ void channel_sv_sema_send(int round) {
     // receive ack
     sv_wait(SV_SEMA_READY_ACK);
     sv_wait(SV_SEMA_MUTEX);
-    assert(sv_sema_buf->ack_payload == round);
+    m_assert(sv_sema_buf->ack_payload == round);
     sv_signal(SV_SEMA_MUTEX);
 }
 
@@ -49,7 +49,7 @@ void channel_sv_sema_recv(int expected_round) {
     // receive payload
     sv_wait(SV_SEMA_READY);
     sv_wait(SV_SEMA_MUTEX);
-    assert(expected_round == sv_sema_buf->payload);
+    m_assert(expected_round == sv_sema_buf->payload);
 
     // produce ack
     sv_sema_buf->ack_payload = sv_sema_buf->payload;

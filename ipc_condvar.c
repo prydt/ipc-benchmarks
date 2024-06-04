@@ -49,7 +49,7 @@ void channel_cv_send(int round) {
     }
 
     // recieved ack
-    assert(condvar_buf->ack_payload == round);
+    m_assert(condvar_buf->ack_payload == round);
     condvar_buf->acked = false;
     pthread_mutex_unlock(&condvar_buf->mutex);
 }
@@ -61,7 +61,7 @@ void channel_cv_recv(int expected_round) {
         pthread_cond_wait(&condvar_buf->cv_empty, &condvar_buf->mutex);
     }
 
-    assert(condvar_buf->payload == expected_round);  // sanity check
+    m_assert(condvar_buf->payload == expected_round);  // sanity check
     condvar_buf->empty = true;
 
     condvar_buf->ack_payload = condvar_buf->payload;

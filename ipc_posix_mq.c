@@ -58,11 +58,11 @@ void channel_posix_mq_init(void) {
 
 void channel_posix_mq_send(int round) {
     send_mq(posix_mq_buf.pmq, round);
-    assert(recv_mq(posix_mq_buf.ack) == round);
+    m_assert(recv_mq(posix_mq_buf.ack) == round);
 }
 
 void channel_posix_mq_recv(int expected_round) {
-    assert(recv_mq(posix_mq_buf.pmq) == expected_round);
+    m_assert(recv_mq(posix_mq_buf.pmq) == expected_round);
     send_mq(posix_mq_buf.ack, expected_round);
 }
 
